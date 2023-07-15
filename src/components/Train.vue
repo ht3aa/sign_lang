@@ -161,6 +161,7 @@ async function saveFile() {
       ></canvas>
     </div>
     <div class="toolBar">
+      <input type="text" v-model="dataLabel" />
       <button @click="predictWebcam">start predict</button>
       <button @click="saveFile">Save data</button>
     </div>
@@ -180,6 +181,7 @@ async function saveFile() {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-direction: column;
   position: absolute;
   z-index: 5;
   left: 50%;
@@ -193,6 +195,7 @@ async function saveFile() {
   background-color: rgb(0, 89, 255);
   border: none;
   padding: 10px 15px;
+  margin: 5px 0 0 0;
   color: white;
 }
 
