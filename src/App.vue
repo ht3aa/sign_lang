@@ -9,6 +9,7 @@ const isLoading = ref(true);
 const poseLandmarker = ref(undefined);
 const handLandmarker = ref(undefined);
 const video = ref(undefined);
+const costraints = ref(undefined);
 
 const checkWebCam = () => {
   const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia;
@@ -25,8 +26,21 @@ const enableCam = async () => {
     errorMsg.value = "Wait! poseLandmarker or handLandmarker not loaded yet.";
     await new Promise((r) => setTimeout(r, 5000));
   } else {
-    console.log(poseLandmarker.value);
-
+    const isMobileDevice = () =>
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    if (isMobileDevice()) {
+      costraints.value = {
+        video: {
+          facingMode: "environment",
+        },
+      };
+    } else {
+      costraints.value = {
+        video: true,
+      };
+    }
     isLoading.value = false;
     return;
   }
@@ -47,7 +61,11 @@ onMounted(() => {
 <template>
   <div v-if="!errorMsg && !isLoading" id="liveView" class="videoView">
     <!-- <Detect :poseLandmarker="poseLandmarker" :handLandmarker="handLandmarker" /> -->
-    <Train :poseLandmarker="poseLandmarker" :handLandmarker="handLandmarker" />
+    <Train
+      :poseLandmarker="poseLandmarker"
+      :handLandmarker="handLandmarker"
+      :constraints="costraints"
+    />
   </div>
 
   <h1 class="loading" v-else>loading...</h1>

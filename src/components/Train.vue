@@ -5,14 +5,16 @@ import {
   FilesetResolver,
   DrawingUtils,
 } from "@mediapipe/tasks-vision";
-import { onMounted, ref, defineProps, toRef } from "vue";
+import { onMounted, ref, toRef } from "vue";
 import * as tf from "@tensorflow/tfjs";
 import train from "../models/classification";
 import { MODEL_INPUT_LENGTH, TRAIN_FRAMES_NUMBERS } from "../assets/global";
+import { saveAs } from "file-saver";
 
-const { poseLandmarker, handLandmarker } = defineProps({
+const { poseLandmarker, handLandmarker, constraints } = defineProps({
   poseLandmarker: Object,
   handLandmarker: Object,
+  constraints: Object,
 });
 
 const data = ref([]);
@@ -33,10 +35,6 @@ onMounted(async () => {
   handCanvasCtx = handCanvasElement.value.getContext("2d");
   poseDrawingUtils = new DrawingUtils(poseCanvasCtx);
   handDrawingUtils = new DrawingUtils(handCanvasCtx);
-
-  const constraints = {
-    video: true,
-  };
 
   console.log(video.value);
 
@@ -117,25 +115,30 @@ const predictWebcam = async () => {
   window.requestAnimationFrame(predictWebcam);
 };
 async function saveFile() {
-  // create a new handle
-  const newHandle = await window.showSaveFilePicker();
-
-  // create a FileSystemWritableFileStream to write to
-  const writableStream = await newHandle.createWritable();
-
-  console.log(data.value);
-  const res = data.value.reduce((acc, curr) => {
+  const csvContent = data.value.reduce((acc, curr) => {
     console.log(curr);
     acc += curr.join(",");
     acc += "\n";
     return acc;
   }, "");
 
-  // write our file
-  await writableStream.write(res);
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
 
-  // close the file and write the contents to disk.
-  await writableStream.close();
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "data.csv";
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
+
+  // const arr = CSV.parse(res);
+  // const str = CSV.stringify(arr);
+  // const blob = new Blob([str], { type: "text/csv;charset=utf-8" });
+  // saveAs(blob, "data.csv");
 }
 </script>
 
