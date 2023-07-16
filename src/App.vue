@@ -4,12 +4,13 @@ import Detect from "./components/Detect.vue";
 import { createHandLandmarker, createPoseLandmarker } from "./models/landmarks";
 import Train from "./components/Train.vue";
 
-const errorMsg = ref(null);
+const errorMsg = ref("Loading...");
 const isLoading = ref(true);
 const poseLandmarker = ref(undefined);
 const handLandmarker = ref(undefined);
 const video = ref(undefined);
 const costraints = ref(undefined);
+const takingTolong = ref(0);
 
 const checkWebCam = () => {
   const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia;
@@ -23,9 +24,18 @@ const enableCam = async () => {
   poseLandmarker.value = await createPoseLandmarker();
   handLandmarker.value = await createHandLandmarker();
   if (!poseLandmarker.value && !handLandmarker.value) {
-    errorMsg.value = "Wait! poseLandmarker or handLandmarker not loaded yet.";
-    await new Promise((r) => setTimeout(r, 5000));
+    if (takingTolong.value === 3) {
+      console.log("hi");
+      errorMsg.value =
+        "Taking to long, It seems that your device doesn't support webcam.";
+      return;
+    } else {
+      errorMsg.value = "Wait! Models not loaded yet.";
+      await new Promise((r) => setTimeout(r, 5000));
+      takingTolong.value++;
+    }
   } else {
+    errorMsg.value = "";
     const isMobileDevice = () =>
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent
@@ -68,14 +78,52 @@ onMounted(() => {
     />
   </div>
 
-  <h1 class="loading" v-else>loading...</h1>
+  <div
+    v-else
+    style="
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    "
+  >
+    <span class="loader"></span>
+    <div style="margin-top: 20px">
+      <span>{{ errorMsg }}</span>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.loading {
-  width: 100%;
-  margin-top: 150px;
-
-  text-align: center;
+.loader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-block;
+  border-top: 4px solid #000000;
+  border-right: 4px solid transparent;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+.loader::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border-bottom: 4px solid #ff3d00;
+  border-left: 4px solid transparent;
+}
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
