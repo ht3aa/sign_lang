@@ -1,7 +1,7 @@
-import { MODEL_INPUT_LENGTH } from "../assets/global";
+import { CLASSES, MODEL_HANDS_INPUT_LENGTH } from "../assets/global";
 import * as tf from "@tensorflow/tfjs";
 
-const train = async () => {
+const train = async (modelLength) => {
   const res = await fetch("../../data.csv");
   const data = await res.text();
 
@@ -11,55 +11,51 @@ const train = async () => {
   let outputSequence = [];
   let model = null;
 
-  data.split("\n").forEach(
-    (frame) => {
-      let input = frame.split(",").map(Number);
-      let output = input[input.length - 1];
-      input = input.slice(0, input.length - 1);
+  data.split("\n").forEach((frame) => {
+    let input = frame.split(",").map(Number);
+    let output = input[input.length - 1];
+    input = input.slice(0, input.length - 1);
 
-      inputSequence.push(...input);
+    inputSequence.push(...input);
 
-      if (inputSequence.length === MODEL_INPUT_LENGTH) {
-        outputSequence.push(output);
-        INPUT.push(inputSequence);
-        OUTPUT.push(...outputSequence);
-        inputSequence = [];
-        outputSequence = [];
-      }
-    },
-    { INPUT: [], OUTPUT: [] }
-  );
-
+    if (inputSequence.length === MODEL_HANDS_INPUT_LENGTH) {
+      outputSequence.push(output);
+      INPUT.push(inputSequence);
+      OUTPUT.push(...outputSequence);
+      inputSequence = [];
+      outputSequence = [];
+    }
+  });
   tf.util.shuffleCombo(INPUT, OUTPUT);
   const INPUT_TENSOR = tf.tensor2d(INPUT);
-  const OUTPUT_TENSOR = tf.oneHot(tf.tensor1d(OUTPUT, "int32"), 3);
-
+  const OUTPUT_TENSOR = tf.oneHot(tf.tensor1d(OUTPUT, "int32"), CLASSES);
   model = tf.sequential();
   model.add(
     tf.layers.dense({
       inputShape: [INPUT[0].length],
-      units: 63,
+      units: 63 * 2,
       activation: "relu",
     })
   );
-  model.add(tf.layers.dense({ units: 70, activation: "relu" }));
-  model.add(tf.layers.dense({ units: 25, activation: "relu" }));
-  model.add(tf.layers.dense({ units: 3, activation: "softmax" }));
+  model.add(tf.layers.dense({ units: 170, activation: "relu" }));
+  model.add(tf.layers.dense({ units: 170, activation: "relu" }));
+  model.add(tf.layers.dense({ units: 35, activation: "relu" }));
+  model.add(tf.layers.dense({ units: CLASSES, activation: "softmax" }));
 
   const logProgress = (epoch, log) => {
     console.log(log);
   };
   model.compile({
     optimizer: "adam",
-    loss: "binaryCrossentropy",
+    loss: "categoricalCrossentropy",
     metrics: ["accuracy"],
   });
 
   let result = await model.fit(INPUT_TENSOR, OUTPUT_TENSOR, {
     shuffle: true,
-    learningRate: 0.000001,
+    learningRate: 0.0000001,
     batchSize: 34,
-    epochs: 50,
+    epochs: 70,
     callbacks: { onEpochEnd: logProgress },
   });
 

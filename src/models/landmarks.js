@@ -28,6 +28,6 @@ export const createHandLandmarker = async () => {
       delegate: "GPU",
     },
     runningMode: "VIDEO",
-    numHands: 1,
+    numHands: 2,
   });
 };

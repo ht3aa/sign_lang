@@ -1,15 +1,7 @@
 <script setup>
-import {
-  PoseLandmarker,
-  HandLandmarker,
-  FilesetResolver,
-  DrawingUtils,
-} from "@mediapipe/tasks-vision";
-import { onMounted, ref, toRef } from "vue";
-import * as tf from "@tensorflow/tfjs";
-import train from "../models/classification";
-import { MODEL_INPUT_LENGTH, TRAIN_FRAMES_NUMBERS } from "../assets/global";
-import { saveAs } from "file-saver";
+import { DrawingUtils } from "@mediapipe/tasks-vision";
+import { onMounted, ref } from "vue";
+import { TRAIN_FRAMES_NUMBERS, zerosHandLandmarks } from "../assets/global";
 
 const { poseLandmarker, handLandmarker, constraints } = defineProps({
   poseLandmarker: Object,
@@ -36,20 +28,15 @@ onMounted(async () => {
   poseDrawingUtils = new DrawingUtils(poseCanvasCtx);
   handDrawingUtils = new DrawingUtils(handCanvasCtx);
 
-  console.log(video.value);
-
   navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
     video.value.srcObject = stream;
   });
-
-  if (video.value === "") {
-    predictWebcam();
-  }
 });
 
 let lastVideoTime = -1;
 let result = undefined;
 let handResults = undefined;
+let handsResults = undefined;
 let poseResults = undefined;
 let counter = 0;
 
@@ -65,7 +52,9 @@ const predictWebcam = async () => {
   let startTimeMs = performance.now();
   if (lastVideoTime !== video.value.currentTime) {
     lastVideoTime = video.value.currentTime;
+
     handResults = handLandmarker.detectForVideo(video.value, startTimeMs);
+
     poseResults = poseLandmarker.detectForVideo(video.value, startTimeMs);
   }
 
@@ -83,10 +72,15 @@ const predictWebcam = async () => {
     poseCanvasElement.value.width,
     poseCanvasElement.value.height
   );
+
   if (handResults.landmarks.length > 0 && poseResults.landmarks.length > 0) {
     // poseLandmarker.landmarks[0] = poseLandmarker.landmarks[0].slice(11, 23);
     // result = [...handResults.landmarks, ...poseResults.landmarks]; // must use wide camera to get same data for each frame
-    result = [...handResults.landmarks];
+    if (handResults.landmarks.length === 1) {
+      result = [...handResults.landmarks, zerosHandLandmarks()];
+    } else {
+      result = [...handResults.landmarks];
+    }
     for (const landmarks of result) {
       handDrawingUtils.drawLandmarks(landmarks, {
         color: "#FF0000",
@@ -116,7 +110,6 @@ const predictWebcam = async () => {
 };
 async function saveFile() {
   const csvContent = data.value.reduce((acc, curr) => {
-    console.log(curr);
     acc += curr.join(",");
     acc += "\n";
     return acc;
@@ -134,11 +127,6 @@ async function saveFile() {
   document.body.removeChild(link);
 
   URL.revokeObjectURL(url);
-
-  // const arr = CSV.parse(res);
-  // const str = CSV.stringify(arr);
-  // const blob = new Blob([str], { type: "text/csv;charset=utf-8" });
-  // saveAs(blob, "data.csv");
 }
 </script>
 
@@ -165,45 +153,11 @@ async function saveFile() {
     </div>
     <div class="toolBar">
       <input type="text" v-model="dataLabel" />
+
       <button @click="predictWebcam">start predict</button>
       <button @click="saveFile">Save data</button>
     </div>
   </div>
 </template>
 
-<style scoped>
-.viewPort {
-  width: 100%;
-  height: 95vh;
-  margin: 0 auto;
-  object-fit: cover;
-}
-
-.toolBar {
-  width: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: column;
-  position: absolute;
-  z-index: 5;
-  left: 50%;
-  bottom: 60px;
-  transform: translateX(-50%);
-}
-
-.toolBar button {
-  outline: none;
-  border-radius: 10px;
-  background-color: rgb(0, 89, 255);
-  border: none;
-  padding: 10px 15px;
-  margin: 5px 0 0 0;
-  color: white;
-}
-
-.toolBar button:hover {
-  cursor: pointer;
-  background-color: rgb(0, 65, 187);
-}
-</style>
+<style scoped></style>

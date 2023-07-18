@@ -8,6 +8,7 @@ const errorMsg = ref("Loading...");
 const isLoading = ref(true);
 const poseLandmarker = ref(undefined);
 const handLandmarker = ref(undefined);
+const handsLandmarker = ref(undefined);
 const video = ref(undefined);
 const costraints = ref(undefined);
 const takingTolong = ref(0);
@@ -23,9 +24,9 @@ const checkWebCam = () => {
 const enableCam = async () => {
   poseLandmarker.value = await createPoseLandmarker();
   handLandmarker.value = await createHandLandmarker();
+
   if (!poseLandmarker.value && !handLandmarker.value) {
     if (takingTolong.value === 3) {
-      console.log("hi");
       errorMsg.value =
         "Taking to long, It seems that your device doesn't support webcam.";
       return;
@@ -70,10 +71,16 @@ onMounted(() => {
 
 <template>
   <div v-if="!errorMsg && !isLoading" id="liveView" class="videoView">
-    <!-- <Detect :poseLandmarker="poseLandmarker" :handLandmarker="handLandmarker" /> -->
+    <!-- <Detect
+      :poseLandmarker="poseLandmarker"
+      :handLandmarker="handLandmarker"
+      :handsLandmarker="handsLandmarker"
+      :constraints="costraints"
+    /> -->
     <Train
       :poseLandmarker="poseLandmarker"
       :handLandmarker="handLandmarker"
+      :handsLandmarker="handsLandmarker"
       :constraints="costraints"
     />
   </div>
