@@ -1,11 +1,11 @@
 const ONE_HAND_LANDMARKS_NUMBER = 21 * 3;
-export const TRAIN_FRAMES_NUMBERS = 15;
+export const TRAIN_FRAMES_NUMBERS = 10;
 
 export const MODEL_HANDS_INPUT_LENGTH =
   (ONE_HAND_LANDMARKS_NUMBER + ONE_HAND_LANDMARKS_NUMBER) *
   TRAIN_FRAMES_NUMBERS;
 
-export const CLASSES = 12;
+export const CLASSES = 3;
 
 export const zerosHandLandmarks = () => {
   const zerosHandLandmarks = [];

@@ -2,16 +2,13 @@
 import { onMounted, ref } from "vue";
 import Detect from "./components/Detect.vue";
 import { createHandLandmarker, createPoseLandmarker } from "./models/landmarks";
-import Train from "./components/Train.vue";
 
 const errorMsg = ref("Loading...");
 const isLoading = ref(true);
 const poseLandmarker = ref(undefined);
 const handLandmarker = ref(undefined);
-const handsLandmarker = ref(undefined);
-const video = ref(undefined);
 const costraints = ref(undefined);
-const takingTolong = ref(0);
+const waiting = ref(0);
 
 const checkWebCam = () => {
   const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia;
@@ -26,14 +23,14 @@ const enableCam = async () => {
   handLandmarker.value = await createHandLandmarker();
 
   if (!poseLandmarker.value && !handLandmarker.value) {
-    if (takingTolong.value === 3) {
+    if (waiting.value === 3) {
       errorMsg.value =
         "Taking to long, It seems that your device doesn't support webcam.";
       return;
     } else {
       errorMsg.value = "Wait! Models not loaded yet.";
       await new Promise((r) => setTimeout(r, 5000));
-      takingTolong.value++;
+      waiting.value++;
     }
   } else {
     errorMsg.value = "";
@@ -59,10 +56,6 @@ const enableCam = async () => {
   enableCam();
 };
 
-const setErrorMsg = (msg) => {
-  errorMsg.value = msg;
-};
-
 onMounted(() => {
   checkWebCam();
   enableCam();
@@ -71,18 +64,16 @@ onMounted(() => {
 
 <template>
   <div v-if="!errorMsg && !isLoading" id="liveView" class="videoView">
-    <!-- <Detect
+    <Detect
       :poseLandmarker="poseLandmarker"
       :handLandmarker="handLandmarker"
-      :handsLandmarker="handsLandmarker"
-      :constraints="costraints"
-    /> -->
-    <Train
-      :poseLandmarker="poseLandmarker"
-      :handLandmarker="handLandmarker"
-      :handsLandmarker="handsLandmarker"
       :constraints="costraints"
     />
+    <!-- <Train
+      :poseLandmarker="poseLandmarker"
+      :handLandmarker="handLandmarker"
+      :constraints="costraints"
+    /> -->
   </div>
 
   <div

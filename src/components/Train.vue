@@ -52,9 +52,7 @@ const predictWebcam = async () => {
   let startTimeMs = performance.now();
   if (lastVideoTime !== video.value.currentTime) {
     lastVideoTime = video.value.currentTime;
-
     handResults = handLandmarker.detectForVideo(video.value, startTimeMs);
-
     poseResults = poseLandmarker.detectForVideo(video.value, startTimeMs);
   }
 
