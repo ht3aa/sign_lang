@@ -252,61 +252,64 @@ const vibrate = () => {
 </script>
 
 <template>
-  <div>
-    <div class="viewPort" style="position: relative; width: 100%">
-      <span
-        style="
-          position: absolute;
-          z-index: 4;
-          left: 10px;
-          top: 10px;
-          color: red;
-          font-size: 20px;
-        "
-        >predict: {{ predict }}</span
-      >
-      <span
-        style="
-          position: absolute;
-          z-index: 4;
-          right: 10px;
-          top: 10px;
-          color: rgb(51, 255, 0);
-          font-size: 20px;
-        "
-        >start: {{ start }}</span
-      >
-      <video
-        ref="video"
-        class="viewPort"
-        style="position: absolute"
-        autoplay
-        playsinline
-      ></video>
-      <canvas
-        class="output_canvas viewPort"
-        ref="poseCanvasElement"
-        style="position: absolute; left: 0px; top: 0px z-index: 2;"
-      ></canvas>
-      <canvas
-        class="output_canvas viewPort"
-        ref="handCanvasElement"
-        style="position: absolute; left: 0px; top: 0px z-index: 1;"
-      ></canvas>
-    </div>
-    <div class="toolBar">
-      <button @click="predictWebcam">start predict</button>
-    </div>
+  <div class="container">
     <div>
-      {{ text }}
-    </div>
-    <div>
-      <button @click="reset">reset</button>
-      <button @click="vibrate">vibrate</button>
+      <div class="viewPort" style="position: relative; width: 100%">
+        <span
+          style="
+            position: absolute;
+            z-index: 4;
+            left: 10px;
+            top: 10px;
+            color: red;
+            font-size: 20px;
+          "
+          >predict: {{ predict }}</span
+        >
+        <span
+          style="
+            position: absolute;
+            z-index: 4;
+            right: 10px;
+            top: 10px;
+            color: rgb(51, 255, 0);
+            font-size: 20px;
+          "
+          >start: {{ start }}</span
+        >
+        <video
+          ref="video"
+          class="viewPort"
+          style="position: absolute"
+          autoplay
+          playsinline
+        ></video>
+        <canvas
+          class="output_canvas viewPort"
+          ref="poseCanvasElement"
+          style="position: absolute; left: 0px; top: 0px z-index: 2;"
+        ></canvas>
+        <canvas
+          class="output_canvas viewPort"
+          ref="handCanvasElement"
+          style="position: absolute; left: 0px; top: 0px z-index: 1;"
+        ></canvas>
+        <div class="toolBar">
+          <button @click="predictWebcam">start predict</button>
+        </div>
+      </div>
+      <h3>
+        {{ text }}
+      </h3>
+      <div>
+        <button @click="reset">reset</button>
+        <button @click="vibrate">vibrate</button>
+      </div>
     </div>
     <div>
       <button @click="recordSpeech">record speech</button>
       <button @click="stopRecordSpeech">stop record speech</button>
+      <h3>{{ asrText.join(" ") }}</h3>
       <div style="width: 500px">
         <video
           style="width: 100%"
@@ -322,4 +325,11 @@ const vibrate = () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.container {
+  display: flex;
+}
+.container div {
+  width: 50%;
+}
+</style>
