@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import Detect from "./components/Detect.vue";
+import Train from "./components/Train.vue";
 import { createHandLandmarker, createPoseLandmarker } from "./models/landmarks";
 
 const errorMsg = ref("Loading...");
@@ -64,16 +65,16 @@ onMounted(() => {
 
 <template>
   <div v-if="!errorMsg && !isLoading" id="liveView" class="videoView">
-    <Detect
+    <!-- <Detect
+      :poseLandmarkeaaadfaasdfr="poseLandmarker"
+      :handLandmarker="handLandmarker"
+      :constraints="costraints"
+    /> -->
+    <Train
       :poseLandmarker="poseLandmarker"
       :handLandmarker="handLandmarker"
       :constraints="costraints"
     />
-    <!-- <Train
-      :poseLandmarker="poseLandmarker"
-      :handLandmarker="handLandmarker"
-      :constraints="costraints"
-    /> -->
   </div>
 
   <div
