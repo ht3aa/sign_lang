@@ -2,7 +2,7 @@ import { CLASSES, MODEL_HANDS_INPUT_LENGTH } from "../assets/global";
 import * as tf from "@tensorflow/tfjs";
 
 const train = async (modelLength) => {
-  const res = await fetch("../../medical.csv");
+  const res = await fetch("../../data_34_hasan.csv");
   const data = await res.text();
 
   let INPUT = [];

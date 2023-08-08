@@ -33,7 +33,42 @@ const { poseLandmarker, handLandmarker, constraints } = defineProps({
 //   "you",
 //   "can",
 // ];
-const words = ["toothache", "ear ache", "chest ache", "stomache"];
+const words = [
+  "BITE",
+  "BLIND",
+  "BONES",
+  "COUGH",
+  "CRAMP",
+  "CRY",
+  "DIARRHEA",
+  "DIZZY",
+  "DROP",
+  "ENERGY",
+  "EXAMINE",
+  "EXPLODE",
+  "EYES",
+  "FEVER",
+  "FORGET",
+  "GAIN WEIGHT",
+  "GIVE BLOOD",
+  "HEADACHE",
+  "INFORM",
+  "ITCHY",
+  "LOSE WEIGHT",
+  "LOUD",
+  "MEDICINE",
+  "OVERLOOK",
+  "PREVENT",
+  "RASH",
+  "RECOVER",
+  "SMOKING",
+  "SPINNING",
+  "SPIT",
+  "SURGERY",
+  "SWOLLEN",
+  "THROW UP",
+  "UPSET STOMACH",
+];
 const data = ref([]);
 const predict = ref("");
 const text = ref("");
@@ -118,7 +153,7 @@ const predictWebcam = async () => {
 
       handResults = handLandmarker.detectForVideo(video.value, startTimeMs);
 
-      poseResults = poseLandmarker.detectForVideo(video.value, startTimeMs);
+      // poseResults = poseLandmarker.detectForVideo(video.value, startTimeMs);
     }
 
     handCanvasCtx.save();
@@ -135,7 +170,7 @@ const predictWebcam = async () => {
       poseCanvasElement.value.width,
       poseCanvasElement.value.height
     );
-    if (handResults.landmarks.length > 0 && poseResults.landmarks.length > 0) {
+    if (handResults.landmarks.length > 0) {
       // poseLandmarker.landmarks[0] = poseLandmarker.landmarks[0].slice(11, 23);
       // result = [...handResults.landmarks, ...poseResults.landmarks]; // must use wide camera to get same data for each frame
       if (handResults.landmarks.length === 1) {

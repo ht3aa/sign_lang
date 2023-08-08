@@ -1,7 +1,11 @@
 <script setup>
 import { DrawingUtils } from "@mediapipe/tasks-vision";
 import { onMounted, ref } from "vue";
-import { TRAIN_FRAMES_NUMBERS, zerosHandLandmarks } from "../assets/global";
+import {
+  TRAIN_FRAMES_NUMBERS,
+  zerosHandLandmarks,
+  TRAIN_FRAMES_SETS,
+} from "../assets/global";
 
 const { poseLandmarker, handLandmarker, constraints } = defineProps({
   poseLandmarker: Object,
@@ -9,23 +13,57 @@ const { poseLandmarker, handLandmarker, constraints } = defineProps({
   constraints: Object,
 });
 
+const words = [
+  "BITE",
+  "BLIND",
+  "BONES",
+  "COUGH",
+  "CRAMP",
+  "CRY",
+  "DIARRHEA",
+  "DIZZY",
+  "DROP",
+  "ENERGY",
+  "EXAMINE",
+  "EXPLODE",
+  "EYES",
+  "FEVER",
+  "FORGET",
+  "GAIN WEIGHT",
+  "GIVE BLOOD",
+  "HEADACHE",
+  "INFORM",
+  "ITCHY",
+  "LOSE WEIGHT",
+  "LOUD",
+  "MEDICINE",
+  "OVERLOOK",
+  "PREVENT",
+  "RASH",
+  "RECOVER",
+  "SMOKING",
+  "SPINNING",
+  "SPIT",
+  "SURGERY",
+  "SWOLLEN",
+  "THROW UP",
+  "UPSET STOMACH",
+];
+console.log(words.length);
 const data = ref([]);
-const dataLabel = ref("");
+const framesSet = ref(0);
+const currentRecordingSignIndex = ref(0);
 const predict = ref(null);
 const video = ref(undefined);
-const poseCanvasElement = ref(undefined);
 const handCanvasElement = ref(undefined);
 
-let poseCanvasCtx;
 let handCanvasCtx;
-let poseDrawingUtils;
 let handDrawingUtils;
 let model;
 
 onMounted(async () => {
-  poseCanvasCtx = poseCanvasElement.value.getContext("2d");
   handCanvasCtx = handCanvasElement.value.getContext("2d");
-  poseDrawingUtils = new DrawingUtils(poseCanvasCtx);
+
   handDrawingUtils = new DrawingUtils(handCanvasCtx);
 
   navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
@@ -37,12 +75,23 @@ let lastVideoTime = -1;
 let result = undefined;
 let handResults = undefined;
 let handsResults = undefined;
-let poseResults = undefined;
 let counter = 0;
 
 const predictWebcam = async () => {
+  if (currentRecordingSignIndex.value === words.length) {
+    alert("done collecting data");
+    return;
+  }
   if (counter >= TRAIN_FRAMES_NUMBERS) {
+    framesSet.value++;
     counter = 0;
+    if (framesSet.value === TRAIN_FRAMES_SETS) {
+      alert(
+        `done collecting data for ${words[currentRecordingSignIndex.value]}`
+      );
+      currentRecordingSignIndex.value++;
+      framesSet.value = 0;
+    }
     return;
   }
 
@@ -53,7 +102,6 @@ const predictWebcam = async () => {
   if (lastVideoTime !== video.value.currentTime) {
     lastVideoTime = video.value.currentTime;
     handResults = handLandmarker.detectForVideo(video.value, startTimeMs);
-    poseResults = poseLandmarker.detectForVideo(video.value, startTimeMs);
   }
 
   handCanvasCtx.save();
@@ -63,15 +111,8 @@ const predictWebcam = async () => {
     handCanvasElement.value.width,
     handCanvasElement.value.height
   );
-  poseCanvasCtx.save();
-  poseCanvasCtx.clearRect(
-    0,
-    0,
-    poseCanvasElement.value.width,
-    poseCanvasElement.value.height
-  );
 
-  if (handResults.landmarks.length > 0 && poseResults.landmarks.length > 0) {
+  if (handResults.landmarks.length > 0) {
     // poseLandmarker.landmarks[0] = poseLandmarker.landmarks[0].slice(11, 23);
     // result = [...handResults.landmarks, ...poseResults.landmarks]; // must use wide camera to get same data for each frame
     if (handResults.landmarks.length === 1) {
@@ -96,7 +137,7 @@ const predictWebcam = async () => {
       return prev;
     }, []);
 
-    flatten.push(dataLabel.value);
+    flatten.push(currentRecordingSignIndex.value);
 
     data.value.push(flatten);
     counter++;
@@ -130,28 +171,24 @@ async function saveFile() {
 
 <template>
   <div>
-    <div style="position: relative; width: 100%">
-      <video
-        ref="video"
-        class="viewPort"
-        style="position: absolute"
-        autoplay
-        playsinline
-      ></video>
-      <canvas
-        class="output_canvas viewPort"
-        ref="poseCanvasElement"
-        style="position: absolute; left: 0px; top: 0px z-index: 2;"
-      ></canvas>
+    <div style="position: relative; width: 700px; margin: 0 auto">
+      <video ref="video" class="viewPort" autoplay playsinline></video>
       <canvas
         class="output_canvas viewPort"
         ref="handCanvasElement"
-        style="position: absolute; left: 0px; top: 0px z-index: 1;"
+        style="position: absolute; left: 0; top: 0; z-index: 4"
       ></canvas>
     </div>
-    <div class="toolBar">
-      <input type="text" v-model="dataLabel" />
+    <div style="position: absolute; left: 20px; top: 20px">
+      <h4>
+        You are recording for sign:
+        <span style="color: red">{{ words[currentRecordingSignIndex] }}</span>
+      </h4>
+      <h4>number of frames sets: {{ framesSet }} / {{ TRAIN_FRAMES_SETS }}</h4>
+    </div>
+    <div></div>
 
+    <div class="toolBar">
       <button @click="predictWebcam">start predict</button>
       <button @click="saveFile">Save data</button>
     </div>

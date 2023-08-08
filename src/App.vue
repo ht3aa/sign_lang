@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import Detect from "./components/Detect.vue";
 import Train from "./components/Train.vue";
-import { createHandLandmarker, createPoseLandmarker } from "./models/landmarks";
+import { createHandLandmarker } from "./models/landmarks";
 
 const errorMsg = ref("Loading...");
 const isLoading = ref(true);
@@ -20,10 +20,9 @@ const checkWebCam = () => {
 };
 
 const enableCam = async () => {
-  poseLandmarker.value = await createPoseLandmarker();
   handLandmarker.value = await createHandLandmarker();
 
-  if (!poseLandmarker.value && !handLandmarker.value) {
+  if (!handLandmarker.value) {
     if (waiting.value === 3) {
       errorMsg.value =
         "Taking to long, It seems that your device doesn't support webcam.";
