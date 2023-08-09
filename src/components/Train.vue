@@ -13,42 +13,44 @@ const { poseLandmarker, handLandmarker, constraints } = defineProps({
   constraints: Object,
 });
 
-const words = [
-  "BITE",
-  "BLIND",
-  "BONES",
-  "COUGH",
-  "CRAMP",
-  "CRY",
-  "DIARRHEA",
-  "DIZZY",
-  "DROP",
-  "ENERGY",
-  "EXAMINE",
-  "EXPLODE",
-  "EYES",
-  "FEVER",
-  "FORGET",
-  "GAIN WEIGHT",
-  "GIVE BLOOD",
-  "HEADACHE",
-  "INFORM",
-  "ITCHY",
-  "LOSE WEIGHT",
-  "LOUD",
-  "MEDICINE",
-  "OVERLOOK",
-  "PREVENT",
-  "RASH",
-  "RECOVER",
-  "SMOKING",
-  "SPINNING",
-  "SPIT",
-  "SURGERY",
-  "SWOLLEN",
-  "THROW UP",
-  "UPSET STOMACH",
-];
+const words = ["BITE", "BLIND", "BONES"];
+
+// const words = [
+//   "BITE",
+//   "BLIND",
+//   "BONES",
+//   "COUGH",
+//   "CRAMP",
+//   "CRY",
+//   "DIARRHEA",
+//   "DIZZY",
+//   "DROP",
+//   "ENERGY",
+//   "EXAMINE",
+//   "EXPLODE",
+//   "EYES",
+//   "FEVER",
+//   "FORGET",
+//   "GAIN WEIGHT",
+//   "GIVE BLOOD",
+//   "HEADACHE",
+//   "INFORM",
+//   "ITCHY",
+//   "LOSE WEIGHT",
+//   "LOUD",
+//   "MEDICINE",
+//   "OVERLOOK",
+//   "PREVENT",
+//   "RASH",
+//   "RECOVER",
+//   "SMOKING",
+//   "SPINNING",
+//   "SPIT",
+//   "SURGERY",
+//   "SWOLLEN",
+//   "THROW UP",
+//   "UPSET STOMACH",
+// ];
 console.log(words.length);
 const data = ref([]);
 const framesSet = ref(0);
@@ -172,6 +174,30 @@ async function saveFile() {
 <template>
   <div>
     <div style="position: relative; width: 700px; margin: 0 auto">
+      <div
+        style="
+          width: 700px;
+          height: 5px;
+          background-color: rgb(0, 255, 0);
+          position: absolute;
+          left: 0;
+          top: 90px;
+          bottom: 0;
+          z-index: 100;
+        "
+      ></div>
+      <div
+        style="
+          width: 700px;
+          height: 5px;
+          background-color: rgb(0, 255, 0);
+          position: absolute;
+          left: 0;
+          top: 330px;
+          bottom: 0;
+          z-index: 100;
+        "
+      ></div>
       <video ref="video" class="viewPort" autoplay playsinline></video>
       <canvas
         class="output_canvas viewPort"
@@ -185,6 +211,10 @@ async function saveFile() {
         <span style="color: red">{{ words[currentRecordingSignIndex] }}</span>
       </h4>
       <h4>number of frames sets: {{ framesSet }} / {{ TRAIN_FRAMES_SETS }}</h4>
+      <h4>
+        Your head must be between <br />
+        the green lines.
+      </h4>
     </div>
     <div></div>
 

@@ -133,7 +133,7 @@ const predictWebcam = async () => {
       console.log(res);
       let max = Math.max(...res);
       console.log(max);
-      if (max >= 0.7) {
+      if (max >= 0.8) {
         let index = res.indexOf(max);
         predict.value = words[index];
         text.value += words[index] + " ";
@@ -214,6 +214,8 @@ const predictWebcam = async () => {
 const reset = () => {
   text.value = "";
   data.value = [];
+  counter = 0;
+  start.value = true;
   predict.value = "";
 };
 
@@ -301,6 +303,30 @@ const vibrate = () => {
           "
           >predict: {{ predict }}</span
         >
+        <div
+          style="
+            width: 700px;
+            height: 5px;
+            background-color: rgb(0, 255, 0);
+            position: absolute;
+            left: 0;
+            top: 90px;
+            bottom: 0;
+            z-index: 100;
+          "
+        ></div>
+        <div
+          style="
+            width: 700px;
+            height: 5px;
+            background-color: rgb(0, 255, 0);
+            position: absolute;
+            left: 0;
+            top: 330px;
+            bottom: 0;
+            z-index: 100;
+          "
+        ></div>
         <span
           style="
             position: absolute;

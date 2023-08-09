@@ -1,10 +1,11 @@
 import { CLASSES, MODEL_HANDS_INPUT_LENGTH } from "../assets/global";
 import * as tf from "@tensorflow/tfjs";
 
-const train = async (modelLength) => {
+const train = async () => {
   const res = await fetch("../../data_34_hasan.csv");
-  const data = await res.text();
-
+  const resRami = await fetch("../../data_34_rami.csv");
+  let data = await res.text();
+  data += await resRami.text();
   let INPUT = [];
   let OUTPUT = [];
   let inputSequence = [];

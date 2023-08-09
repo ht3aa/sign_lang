@@ -6,7 +6,7 @@ import { createHandLandmarker } from "./models/landmarks";
 
 const errorMsg = ref("Loading...");
 const isLoading = ref(true);
-const poseLandmarker = ref(undefined);
+
 const handLandmarker = ref(undefined);
 const costraints = ref(undefined);
 const waiting = ref(0);
@@ -64,16 +64,8 @@ onMounted(() => {
 
 <template>
   <div v-if="!errorMsg && !isLoading" id="liveView" class="videoView">
-    <!-- <Detect
-      :poseLandmarkeaaadfaasdfr="poseLandmarker"
-      :handLandmarker="handLandmarker"
-      :constraints="costraints"
-    /> -->
-    <Train
-      :poseLandmarker="poseLandmarker"
-      :handLandmarker="handLandmarker"
-      :constraints="costraints"
-    />
+    <!-- <Detect :handLandmarker="handLandmarker" :constraints="costraints" /> -->
+    <Train :handLandmarker="handLandmarker" :constraints="costraints" />
   </div>
 
   <div
