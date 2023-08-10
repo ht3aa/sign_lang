@@ -64,8 +64,8 @@ onMounted(() => {
 
 <template>
   <div v-if="!errorMsg && !isLoading" id="liveView" class="videoView">
-    <!-- <Detect :handLandmarker="handLandmarker" :constraints="costraints" /> -->
-    <Train :handLandmarker="handLandmarker" :constraints="costraints" />
+    <Detect :handLandmarker="handLandmarker" :constraints="costraints" />
+    <!-- <Train :handLandmarker="handLandmarker" :constraints="costraints" /> -->
   </div>
 
   <div

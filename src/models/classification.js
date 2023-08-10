@@ -4,8 +4,11 @@ import * as tf from "@tensorflow/tfjs";
 const train = async () => {
   const res = await fetch("../../data_34_hasan.csv");
   const resRami = await fetch("../../data_34_rami.csv");
+  const resRm = await fetch("../../data_34_rm.csv");
   let data = await res.text();
   data += await resRami.text();
+  data += await resRm.text();
+
   let INPUT = [];
   let OUTPUT = [];
   let inputSequence = [];
@@ -54,13 +57,14 @@ const train = async () => {
 
   let result = await model.fit(INPUT_TENSOR, OUTPUT_TENSOR, {
     shuffle: true,
+    validationSplit: 25,
     learningRate: 0.0000001,
     batchSize: 34,
     epochs: 70,
     callbacks: { onEpochEnd: logProgress },
   });
 
-  // await model.save("downloads://handModel");
+  await model.save("downloads://handModel");
 
   OUTPUT_TENSOR.dispose();
   INPUT_TENSOR.dispose();

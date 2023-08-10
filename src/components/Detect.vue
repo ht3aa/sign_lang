@@ -116,7 +116,9 @@ onMounted(async () => {
     video.value.srcObject = stream;
   });
 
-  model = await train();
+  // model = await train();
+  model = await tf.loadLayersModel("/model/handModel.json");
+  console.log("hi");
 });
 
 let lastVideoTime = -1;
